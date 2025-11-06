@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+
+// Import routes
 const adminRoutes = require('./routes/adminRoutes');
+const departureRoutes = require('./routes/departureRoutes'); // New route
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -10,8 +13,9 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
+// API Routes
 app.use('/api/admin', adminRoutes);
+app.use('/api/departures', departureRoutes); // New route
 
 // Base route
 app.get('/', (req, res) => {
