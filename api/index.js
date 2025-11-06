@@ -1,46 +1,26 @@
-
-require('dotenv').config();
 const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
-// Middleware to parse JSON bodies
-app.use(express.json());
+// Middleware
+app.use(cors());
+app.use(bodyParser.json());
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+// Routes
+app.use('/api/admin', adminRoutes);
 
-// GET all tasks
-app.get('/api', async (req, res) => {
-  const { data, error } = await supabase.from('tasks').select('*');
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-  res.status(200).json(data);
+// Base route
+app.get('/', (req, res) => {
+  res.send('School Gate Management API is running...');
 });
 
-// POST a new task
-app.post('/api/tasks', async (req, res) => {
-  const { task_name, is_completed } = req.body;
-
-  if (!task_name) {
-    return res.status(400).json({ error: 'task_name is required' });
-  }
-
-  const { data, error } = await supabase
-    .from('tasks')
-    .insert([{ task_name, is_completed: is_completed || false }])
-    .select();
-
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
-
-  res.status(201).json(data);
-});
-
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+module.exports = app;
